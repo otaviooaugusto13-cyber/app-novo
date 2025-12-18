@@ -1,173 +1,313 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Praticamente • Alta Performance</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afiliagram • Área de Membros</title>
 
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-body: #0a0a0a;
+            --bg-sidebar: #121212;
+            --bg-card: #1c1c1c;
+            --accent-color: #00a8ff;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
 
-<style>
-*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{margin:0;background:#0b0b0b;color:#fff;display:flex}
+        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg-body); 
+            color: var(--text-main); 
+            display: flex; 
+            height: 100vh;
+            overflow: hidden;
+        }
 
-/* SIDEBAR */
-.sidebar{width:240px;background:#111;padding:25px;height:100vh}
-.sidebar h1{font-size:22px;margin-bottom:30px}
-.sidebar h1 .blue{color:#1e90ff}
-.sidebar h1 .gray{color:#aaa}
-.sidebar a{display:block;color:#aaa;text-decoration:none;margin:12px 0;cursor:pointer}
-.sidebar a:hover{color:#fff}
-.progress{margin-top:30px;font-size:13px}
-.progress-bar{height:8px;background:#333;border-radius:6px;margin-top:8px}
-.progress-fill{height:100%;width:0%;background:#1e90ff;border-radius:6px}
-#certBtn{margin-top:20px;padding:10px;width:100%;border:none;border-radius:6px;background:#333;color:#777;cursor:not-allowed}
-#certBtn.active{background:#1e90ff;color:#fff;cursor:pointer}
+        /* --- SIDEBAR --- */
+        .sidebar { 
+            width: 260px; 
+            background: var(--bg-sidebar); 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column;
+            border-right: 1px solid #222;
+        }
 
-/* CONTENT */
-.content{flex:1;padding:40px}
-.modules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
-.module{background:#151515;border-radius:18px;padding:20px;cursor:pointer;position:relative;overflow:hidden}
-.module-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.25}
-.module h3,.module p{position:relative;z-index:2}
-.module h3{margin:0}
-.module p{color:#1e90ff;font-size:13px}
+        .profile-section {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #222;
+            margin-bottom: 20px;
+        }
 
-/* MODAL */
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);align-items:center;justify-content:center}
-.modal-content{background:#111;width:90%;max-width:900px;border-radius:20px;padding:25px}
-.modal iframe{width:100%;height:320px;border-radius:12px;border:none}
-.lesson{display:flex;justify-content:space-between;align-items:center;background:#1a1a1a;padding:12px;border-radius:10px;margin-top:10px}
-.lesson button{margin-left:10px;padding:6px 10px;border:none;border-radius:6px;background:#1e90ff;color:#fff;cursor:pointer}
-.close{margin-top:15px;text-align:right;cursor:pointer;color:#aaa}
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #333;
+            margin: 0 auto 10px;
+            border: 2px solid #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-@media(max-width:768px){.sidebar{display:none}.content{padding:20px}}
-</style>
+        .sidebar h2 { font-size: 14px; margin: 10px 0; color: #fff; }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 12px 10px;
+            margin: 4px 0;
+            border-radius: 8px;
+            transition: 0.3s;
+            font-size: 14px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: #1a1a1a;
+            color: var(--accent-color);
+        }
+
+        .progress-container { margin-top: auto; padding: 20px 0; }
+        .progress-text { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; display: block; }
+        .progress-bar { height: 6px; background: #333; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: var(--accent-color); transition: 0.5s; }
+
+        /* --- CONTENT AREA --- */
+        .main-content { 
+            flex: 1; 
+            padding: 40px; 
+            overflow-y: auto; 
+        }
+
+        .main-content h1 { font-size: 24px; margin-bottom: 30px; font-weight: 500; }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        /* --- CARD ESTILO STORIES (Igual à foto) --- */
+        .card {
+            aspect-ratio: 9/16;
+            background: var(--bg-card);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 1px solid #222;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .card-img {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.7);
+        }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            z-index: 2;
+        }
+
+        .mod-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 800;
+            text-transform: uppercase;
+            line-height: 1;
+            text-align: center;
+            color: #fff;
+        }
+
+        .card-title span.highlight { color: var(--accent-color); }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-body {
+            background: #111;
+            width: 100%;
+            max-width: 1000px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
+        .video-container iframe { position: absolute; top:0; left:0; width:100%; height:100%; border:none; }
+
+        .modal-info { padding: 20px; }
+        .btn-close { position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px; z-index: 10; }
+
+        .btn-action {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; }
+            .main-content { padding: 20px; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <h1><span class="blue">PRATICA</span><span class="gray">MENTE</span></h1>
-  <a>Início</a>
-  <a>Minha Conta</a>
-  <a>Certificados</a>
-  <a>Suporte</a>
+<aside class="sidebar">
+    <div class="profile-section">
+        <div class="avatar-circle">👤</div>
+        <h2>Mp2 Produtos Digitais Ltda</h2>
+    </div>
 
-  <div class="progress">
-    Progresso do curso
-    <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
-    <span id="progressText">0%</span>
-  </div>
+    <nav class="nav-links">
+        <a href="#" class="active">🏠 Início</a>
+        <a href="#">👤 Minha Conta</a>
+        <a href="#">🎓 Central de Certificados</a>
+        <a href="#" id="adminLink">⚙️ Administrador</a>
+    </nav>
 
-  <button id="certBtn" disabled>Gerar Certificado</button>
-</div>
+    <div class="progress-container">
+        <span class="progress-text">Seu progresso: <b id="progressText">0%</b></span>
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <button id="certBtn" class="btn-action" style="width:100%; margin-top:15px; opacity:0.5;" disabled>Gerar Certificado</button>
+    </div>
+</aside>
 
-<div class="content">
-  <h2>Alta Performance</h2>
-  <div class="modules" id="modules"></div>
-</div>
+<main class="main-content">
+    <h1>Afiliagram</h1>
+    <div class="modules-grid" id="modulesGrid">
+        </div>
+</main>
 
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <iframe id="video"></iframe>
-    <div id="lessons"></div>
-    <div class="close" onclick="closeModal()">Fechar</div>
-  </div>
+<div class="modal" id="videoModal">
+    <div class="modal-body">
+        <span class="btn-close" onclick="closeModal()">&times;</span>
+        <div class="video-container">
+            <iframe id="mainVideo" src="" allowfullscreen></iframe>
+        </div>
+        <div class="modal-info">
+            <h2 id="modalTitle">Título do Módulo</h2>
+            <p id="modalDesc">Descrição da aula selecionada.</p>
+            <button class="btn-action" onclick="marcarComoConcluida()">Marcar como assistida</button>
+        </div>
+    </div>
 </div>
 
 <script>
-/* ================= DADOS ================= */
-const totalAulas = 5;
-let aulasAssistidas = 0;
+    const modulos = [
+        { id: 1, tag: 'Módulo 1', t1: 'POR ONDE', t2: 'COMEÇAR', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+        { id: 2, tag: 'Módulo 2', t1: 'COMO SAIR', t2: 'NA FRENTE', img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+        { id: 3, tag: 'Módulo 3', t1: 'COMO FUNCIONA', t2: 'SUPORTE', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+        { id: 4, tag: 'Módulo 4', t1: 'MARKETING', t2: 'DIGITAL', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+    ];
 
-const modulos = [
-  { id:1, titulo:'Módulo 1', subtitulo:'Por onde começar', imagem:'https://source.unsplash.com/800x600/?focus,discipline', video:'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-  { id:2, titulo:'Módulo 2', subtitulo:'Constância', imagem:'https://source.unsplash.com/800x600/?consistency,habits', video:'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-  { id:3, titulo:'Módulo 3', subtitulo:'Foco', imagem:'https://source.unsplash.com/800x600/?focus,productivity', video:'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-  { id:4, titulo:'Módulo 4', subtitulo:'Disciplina', imagem:'https://source.unsplash.com/800x600/?discipline,success', video:'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-  { id:5, titulo:'Módulo 5', subtitulo:'Alta Performance', imagem:'https://source.unsplash.com/800x600/?performance,mindset', video:'https://www.youtube.com/embed/dQw4w9WgXcQ' }
-];
+    let concluidas = 0;
+    const total = modulos.length;
 
-/* ================= RENDER ================= */
-const modulesDiv = document.getElementById('modules');
+    function renderCards() {
+        const grid = document.getElementById('modulesGrid');
+        grid.innerHTML = modulos.map(m => `
+            <div class="card" onclick="openModule('${m.video}', '${m.t1} ${m.t2}')">
+                <div class="card-img" style="background-image: url('${m.img}')"></div>
+                <div class="card-overlay">
+                    <div class="mod-tag">${m.tag}</div>
+                    <div class="card-title">${m.t1}<br><span class="highlight">${m.t2}</span></div>
+                </div>
+            </div>
+        `).join('');
+    }
 
-modulos.forEach(m => {
-  const d = document.createElement('div');
-  d.className = 'module';
-  d.innerHTML = `
-    <div class="module-bg" style="background-image:url('${m.imagem}')"></div>
-    <h3>${m.titulo}</h3>
-    <p>${m.subtitulo}</p>
-  `;
-  d.onclick = () => openModule(m);
-  modulesDiv.appendChild(d);
-});
+    function openModule(url, title) {
+        document.getElementById('videoModal').style.display = 'flex';
+        document.getElementById('mainVideo').src = url;
+        document.getElementById('modalTitle').innerText = title;
+    }
 
-/* ================= MODAL ================= */
-function openModule(m){
-  document.getElementById('modal').style.display='flex';
-  document.getElementById('video').src = m.video;
-  const lessons = document.getElementById('lessons');
-  lessons.innerHTML='';
+    function closeModal() {
+        document.getElementById('videoModal').style.display = 'none';
+        document.getElementById('mainVideo').src = '';
+    }
 
-  for(let i=1;i<=1;i++){
-    const l=document.createElement('div');
-    l.className='lesson';
-    l.innerHTML=`
-      Aula ${i}
-      <div>
-        <button onclick="assistirAula()">Assistir</button>
-        <a href="videos/aula${i}.mp4" download><button>Vídeo</button></a>
-        <a href="arquivos/aula${i}.pdf" download><button>PDF</button></a>
-      </div>`;
-    lessons.appendChild(l);
-  }
-}
+    function marcarComoConcluida() {
+        if(concluidas < total) {
+            concluidas++;
+            const percent = Math.round((concluidas / total) * 100);
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').innerText = percent + '%';
+            
+            if(percent === 100) {
+                const btn = document.getElementById('certBtn');
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.onclick = gerarCertificado;
+            }
+        }
+        closeModal();
+    }
 
-function closeModal(){
-  document.getElementById('modal').style.display='none';
-  document.getElementById('video').src='';
-}
+    function gerarCertificado() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+        doc.setFillColor(20, 20, 20);
+        doc.rect(0, 0, 297, 210, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(40);
+        doc.text("CERTIFICADO", 148, 70, { align: "center" });
+        doc.setFontSize(20);
+        doc.text("Concluído com sucesso por Aluno Afiliagram", 148, 100, { align: "center" });
+        doc.save("certificado.pdf");
+    }
 
-/* ================= PROGRESSO ================= */
-function assistirAula(){
-  aulasAssistidas++;
-  let p=Math.min(100,Math.round((aulasAssistidas/totalAulas)*100));
-  document.getElementById('progressFill').style.width=p+'%';
-  document.getElementById('progressText').innerText=p+'%';
-
-  if(p===100){
-    const btn=document.getElementById('certBtn');
-    btn.classList.add('active');
-    btn.disabled=false;
-    btn.onclick=gerarCertificado;
-  }
-}
-
-/* ================= CERTIFICADO ================= */
-function gerarCertificado(){
-  const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF();
-  pdf.setFontSize(18);
-  pdf.text('CERTIFICADO DE CONCLUSÃO',105,60,{align:'center'});
-  pdf.setFontSize(12);
-  pdf.text('Certificamos que o aluno concluiu o curso',105,80,{align:'center'});
-  pdf.text('PRATICAMENTE • Alta Performance',105,95,{align:'center'});
-  pdf.save('certificado-praticamente.pdf');
-}
-
-/* ================= PWA ================= */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
+    renderCards();
 </script>
 
 </body>
 </html>
+
 
 
 
