@@ -49,15 +49,20 @@
         }
 
         .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #222;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid var(--accent);
-        }
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid var(--accent);
+    cursor: pointer;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 
         .user-name { font-size: 14px; font-weight: 600; }
 
@@ -182,9 +187,16 @@
 <body>
 
 <header>
-    <div class="user-info">
-        <div class="avatar">👤</div>
-        <div class="user-name">Mp2 Produtos Digitais</div>
+<div class="user-info">
+    <label class="avatar">
+        <input type="file" id="fotoInput" accept="image/*" hidden>
+        <img id="avatarImg" src="" alt="Avatar">
+    </label>
+    <div class="user-name" id="userName" contenteditable="true">
+        Seu Nome Aqui
+    </div>
+</div>
+
     </div>
     <div class="progress-box">
         <div style="display: flex; justify-content: space-between; font-size: 11px;">
@@ -275,12 +287,46 @@
         doc.text("CERTIFICADO Cursos", 148, 100, { align: "center" });
         doc.save("certificado.pdf");
     }
+    <script>
+    const avatarImg = document.getElementById('avatarImg');
+    const fotoInput = document.getElementById('fotoInput');
+    const userName = document.getElementById('userName');
+
+    // Carregar dados salvos
+    const savedPhoto = localStorage.getItem('userPhoto');
+    const savedName = localStorage.getItem('userName');
+
+    if (savedPhoto) avatarImg.src = savedPhoto;
+    else avatarImg.src = 'https://ui-avatars.com/api/?background=00a8ff&color=fff&name=User';
+
+    if (savedName) userName.innerText = savedName;
+
+    // Upload da foto
+    fotoInput.addEventListener('change', () => {
+        const file = fotoInput.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            avatarImg.src = reader.result;
+            localStorage.setItem('userPhoto', reader.result);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Salvar nome
+    userName.addEventListener('input', () => {
+        localStorage.setItem('userName', userName.innerText);
+    });
+</script>
+
 
     renderCards();
 </script>
 
 </body>
 </html>
+
 
 
 
