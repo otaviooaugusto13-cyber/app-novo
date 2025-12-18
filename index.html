@@ -241,97 +241,7 @@
 </div>
 
 <script>
-    const modulos = [
-        { id: 1, tag: 'Módulo 1', t1: 'POR ONDE', t2: 'COMEÇAR', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-        { id: 2, tag: 'Módulo 2', t1: 'COMO SAIR', t2: 'NA FRENTE', img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-        { id: 3, tag: 'Módulo 3', t1: 'COMO FUNCIONA', t2: 'SUPORTE', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-        { id: 4, tag: 'Módulo 4', t1: 'MARKETING', t2: 'DIGITAL', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
-    ];
-
-    let concluidas = 0;
-
-    function renderCards() {
-        const grid = document.getElementById('modulesGrid');
-        grid.innerHTML = modulos.map(m => `
-            <div class="card" onclick="openModule('${m.video}', '${m.t1} ${m.t2}')">
-                <div class="card-img" style="background-image: url('${m.img}')"></div>
-                <div class="card-content">
-                    <div class="mod-label">${m.tag}</div>
-                    <div class="card-title">${m.t1}<br><span>${m.t2}</span></div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function openModule(url, title) {
-        document.getElementById('videoModal').style.display = 'flex';
-        document.getElementById('mainVideo').src = url;
-        document.getElementById('modalTitle').innerText = title;
-        document.body.style.overflow = 'hidden'; // Trava o scroll do fundo
-    }
-
-    function closeModal() {
-        document.getElementById('videoModal').style.display = 'none';
-        document.getElementById('mainVideo').src = '';
-        document.body.style.overflow = 'auto';
-    }
-
-    function marcarComoConcluida() {
-        if(concluidas < modulos.length) {
-            concluidas++;
-            const percent = Math.round((concluidas / modulos.length) * 100);
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').innerText = percent + '%';
-            
-            if(percent === 100) {
-                document.getElementById('certBtn').style.display = 'block';
-            }
-        }
-        closeModal();
-    }
-
-    function gerarCertificado() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('l', 'mm', 'a4');
-        doc.setFillColor(10, 10, 10);
-        doc.rect(0, 0, 297, 210, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.text("CERTIFICADO Cursos", 148, 100, { align: "center" });
-        doc.save("certificado.pdf");
-    }
-    <script>
-    const avatarImg = document.getElementById('avatarImg');
-    const fotoInput = document.getElementById('fotoInput');
-    const userName = document.getElementById('userName');
-
-    // Carregar dados salvos
-    const savedPhoto = localStorage.getItem('userPhoto');
-    const savedName = localStorage.getItem('userName');
-
-    if (savedPhoto) avatarImg.src = savedPhoto;
-    else avatarImg.src = 'https://ui-avatars.com/api/?background=00a8ff&color=fff&name=User';
-
-    if (savedName) userName.innerText = savedName;
-
-    // Upload da foto
-    fotoInput.addEventListener('change', () => {
-        const file = fotoInput.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            avatarImg.src = reader.result;
-            localStorage.setItem('userPhoto', reader.result);
-        };
-        reader.readAsDataURL(file);
-    });
-
-    // Salvar nome
-    userName.addEventListener('input', () => {
-        localStorage.setItem('userName', userName.innerText);
-    });
-</script>
-    <script>
+document.addEventListener('DOMContentLoaded', () => {
 
     const modulos = [
         { id: 1, tag: 'Módulo 1', t1: 'POR ONDE', t2: 'COMEÇAR', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
@@ -348,7 +258,7 @@
 
         grid.innerHTML = modulos.map(m => `
             <div class="card" onclick="openModule('${m.video}', '${m.t1} ${m.t2}')">
-                <div class="card-img" style="background-image: url('${m.img}')"></div>
+                <div class="card-img" style="background-image:url('${m.img}')"></div>
                 <div class="card-content">
                     <div class="mod-label">${m.tag}</div>
                     <div class="card-title">${m.t1}<br><span>${m.t2}</span></div>
@@ -357,236 +267,71 @@
         `).join('');
     }
 
-    function openModule(url, title) {
+    window.openModule = function(url, title) {
         document.getElementById('videoModal').style.display = 'flex';
         document.getElementById('mainVideo').src = url;
         document.getElementById('modalTitle').innerText = title;
         document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
+    window.closeModal = function() {
         document.getElementById('videoModal').style.display = 'none';
         document.getElementById('mainVideo').src = '';
         document.body.style.overflow = 'auto';
     }
 
-    function marcarComoConcluida() {
-        if (concluidas < modulos.length) {
-            concluidas++;
-            const percent = Math.round((concluidas / modulos.length) * 100);
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').innerText = percent + '%';
+    window.marcarComoConcluida = function() {
+        concluidas++;
+        const percent = Math.round((concluidas / modulos.length) * 100);
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressText').innerText = percent + '%';
 
-            if (percent === 100) {
-                document.getElementById('certBtn').style.display = 'block';
-            }
+        if (percent === 100) {
+            document.getElementById('certBtn').style.display = 'block';
         }
         closeModal();
     }
 
-    function gerarCertificado() {
+    window.gerarCertificado = function() {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('l', 'mm', 'a4');
-        doc.setFillColor(10, 10, 10);
-        doc.rect(0, 0, 297, 210, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.text("CERTIFICADO Cursos", 148, 100, { align: "center" });
+        const doc = new jsPDF('l','mm','a4');
+        doc.text("CERTIFICADO", 148, 100, { align:'center' });
         doc.save("certificado.pdf");
     }
 
-    // 🔥 PERFIL (foto + nome)
+    // PERFIL
     const avatarImg = document.getElementById('avatarImg');
     const fotoInput = document.getElementById('fotoInput');
     const userName = document.getElementById('userName');
 
     if (avatarImg && fotoInput && userName) {
-        const savedPhoto = localStorage.getItem('userPhoto');
-        const savedName = localStorage.getItem('userName');
+        avatarImg.src = localStorage.getItem('userPhoto') || 
+            'https://ui-avatars.com/api/?background=00a8ff&color=fff&name=User';
 
-        avatarImg.src = savedPhoto
-            ? savedPhoto
-            : 'https://ui-avatars.com/api/?background=00a8ff&color=fff&name=User';
+        userName.innerText = localStorage.getItem('userName') || 'Seu Nome';
 
-        if (savedName) userName.innerText = savedName;
-
-        fotoInput.addEventListener('change', () => {
-            const file = fotoInput.files[0];
-            if (!file) return;
-
+        fotoInput.addEventListener('change', e => {
             const reader = new FileReader();
             reader.onload = () => {
                 avatarImg.src = reader.result;
                 localStorage.setItem('userPhoto', reader.result);
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(e.target.files[0]);
         });
 
         userName.addEventListener('input', () => {
             localStorage.setItem('userName', userName.innerText);
         });
     }
-});/* ===== DESKTOP ===== */
-@media (min-width: 900px) {
 
-    body {
-        background: #000;
-        align-items: center;
-    }
-
-    header,
-    main {
-        width: 100%;
-        max-width: 1200px;
-    }
-
-    header {
-        border-radius: 0 0 16px 16px;
-        margin-bottom: 20px;
-    }
-
-    main {
-        padding: 30px 20px;
-    }
-
-    .user-info {
-        margin-bottom: 20px;
-    }
-
-    .modules-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-    }
-
-    .card {
-        aspect-ratio: 4 / 5;
-        border-radius: 14px;
-    }
-
-    .card-title {
-        font-size: 18px;
-    }
-
-    .section-title {
-        font-size: 22px;
-        margin-bottom: 25px;
-    }
-
-    /* Modal centralizada no desktop */
-    .modal {
-        align-items: center;
-        justify-content: center;
-        background: rgba(0,0,0,0.9);
-    }
-
-    .video-box {
-        max-width: 900px;
-    }
-
-    .modal-details {
-        max-width: 900px;
-        margin: auto;
-    }
-
-    /* Botão certificado mais elegante */
-    #certBtn {
-        max-width: 400px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-}
-
-        /* ===== LAYOUT BASE ===== */
-.layout {
-    width: 100%;
-}
-
-/* Sidebar escondida no mobile */
-.sidebar {
-    display: none;
-}
-
-/* ===== DESKTOP EXCLUSIVO ===== */
-@media (min-width: 900px) {
-
-    body {
-        align-items: center;
-    }
-
-    header {
-        width: 100%;
-        max-width: 1400px;
-        margin: auto;
-        border-radius: 0 0 20px 20px;
-    }
-
-    .layout {
-        display: grid;
-        grid-template-columns: 260px 1fr;
-        gap: 30px;
-        max-width: 1400px;
-        margin: 30px auto;
-        padding: 0 20px;
-    }
-
-    .sidebar {
-        display: block;
-        background: #0a0a0a;
-        border-radius: 18px;
-        padding: 25px;
-        border: 1px solid #1a1a1a;
-        height: fit-content;
-        position: sticky;
-        top: 120px;
-    }
-
-    main {
-        padding: 0;
-    }
-
-    .modules-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 22px;
-    }
-
-    .card {
-        aspect-ratio: 4 / 5;
-        border-radius: 16px;
-    }
-
-    .card-title {
-        font-size: 18px;
-    }
-
-    .section-title {
-        font-size: 24px;
-        margin-bottom: 25px;
-    }
-
-    /* Modal elegante no desktop */
-    .modal {
-        align-items: center;
-        justify-content: center;
-        background: rgba(0,0,0,0.85);
-    }
-
-    .video-box,
-    .modal-details {
-        max-width: 900px;
-        margin: auto;
-    }
-
-    #certBtn {
-        max-width: 420px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-}
-
-        
+    renderCards();
+});
 </script>
+
 
 </body>
 </html>
+
 
 
 
