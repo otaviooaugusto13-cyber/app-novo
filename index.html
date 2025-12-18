@@ -322,10 +322,112 @@
 
 
     renderCards();
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const modulos = [
+        { id: 1, tag: 'Módulo 1', t1: 'POR ONDE', t2: 'COMEÇAR', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+        { id: 2, tag: 'Módulo 2', t1: 'COMO SAIR', t2: 'NA FRENTE', img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+        { id: 3, tag: 'Módulo 3', t1: 'COMO FUNCIONA', t2: 'SUPORTE', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+        { id: 4, tag: 'Módulo 4', t1: 'MARKETING', t2: 'DIGITAL', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+    ];
+
+    let concluidas = 0;
+
+    function renderCards() {
+        const grid = document.getElementById('modulesGrid');
+        if (!grid) return;
+
+        grid.innerHTML = modulos.map(m => `
+            <div class="card" onclick="openModule('${m.video}', '${m.t1} ${m.t2}')">
+                <div class="card-img" style="background-image: url('${m.img}')"></div>
+                <div class="card-content">
+                    <div class="mod-label">${m.tag}</div>
+                    <div class="card-title">${m.t1}<br><span>${m.t2}</span></div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openModule(url, title) {
+        document.getElementById('videoModal').style.display = 'flex';
+        document.getElementById('mainVideo').src = url;
+        document.getElementById('modalTitle').innerText = title;
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('videoModal').style.display = 'none';
+        document.getElementById('mainVideo').src = '';
+        document.body.style.overflow = 'auto';
+    }
+
+    function marcarComoConcluida() {
+        if (concluidas < modulos.length) {
+            concluidas++;
+            const percent = Math.round((concluidas / modulos.length) * 100);
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').innerText = percent + '%';
+
+            if (percent === 100) {
+                document.getElementById('certBtn').style.display = 'block';
+            }
+        }
+        closeModal();
+    }
+
+    function gerarCertificado() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'mm', 'a4');
+        doc.setFillColor(10, 10, 10);
+        doc.rect(0, 0, 297, 210, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.text("CERTIFICADO Cursos", 148, 100, { align: "center" });
+        doc.save("certificado.pdf");
+    }
+
+    // 🔥 PERFIL (foto + nome)
+    const avatarImg = document.getElementById('avatarImg');
+    const fotoInput = document.getElementById('fotoInput');
+    const userName = document.getElementById('userName');
+
+    if (avatarImg && fotoInput && userName) {
+        const savedPhoto = localStorage.getItem('userPhoto');
+        const savedName = localStorage.getItem('userName');
+
+        avatarImg.src = savedPhoto
+            ? savedPhoto
+            : 'https://ui-avatars.com/api/?background=00a8ff&color=fff&name=User';
+
+        if (savedName) userName.innerText = savedName;
+
+        fotoInput.addEventListener('change', () => {
+            const file = fotoInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                avatarImg.src = reader.result;
+                localStorage.setItem('userPhoto', reader.result);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        userName.addEventListener('input', () => {
+            localStorage.setItem('userName', userName.innerText);
+        });
+    }
+
+    renderCards();
+
+});
+</script>
+
 </script>
 
 </body>
 </html>
+
 
 
 
