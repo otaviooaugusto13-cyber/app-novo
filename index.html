@@ -207,10 +207,22 @@
     </div>
 </header>
 
-<main>
-    <span class="section-title">Cursos</span>
-    <div class="modules-grid" id="modulesGrid"></div>
-</main>
+<div class="layout">
+    
+    <aside class="sidebar">
+        <h3 style="margin-top:0">Seu progresso</h3>
+        <p style="color:#888;font-size:14px">
+            Continue evoluindo todos os dias.
+        </p>
+    </aside>
+
+    <main>
+        <span class="section-title">Cursos</span>
+        <div class="modules-grid" id="modulesGrid"></div>
+    </main>
+
+</div>
+
 
 <button id="certBtn" class="btn-action" onclick="gerarCertificado()">Baixar Meu Certificado</button>
 
@@ -487,10 +499,99 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 }
 
+        /* ===== LAYOUT BASE ===== */
+.layout {
+    width: 100%;
+}
+
+/* Sidebar escondida no mobile */
+.sidebar {
+    display: none;
+}
+
+/* ===== DESKTOP EXCLUSIVO ===== */
+@media (min-width: 900px) {
+
+    body {
+        align-items: center;
+    }
+
+    header {
+        width: 100%;
+        max-width: 1400px;
+        margin: auto;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .layout {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 30px;
+        max-width: 1400px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+
+    .sidebar {
+        display: block;
+        background: #0a0a0a;
+        border-radius: 18px;
+        padding: 25px;
+        border: 1px solid #1a1a1a;
+        height: fit-content;
+        position: sticky;
+        top: 120px;
+    }
+
+    main {
+        padding: 0;
+    }
+
+    .modules-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+    }
+
+    .card {
+        aspect-ratio: 4 / 5;
+        border-radius: 16px;
+    }
+
+    .card-title {
+        font-size: 18px;
+    }
+
+    .section-title {
+        font-size: 24px;
+        margin-bottom: 25px;
+    }
+
+    /* Modal elegante no desktop */
+    .modal {
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,0,0,0.85);
+    }
+
+    .video-box,
+    .modal-details {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    #certBtn {
+        max-width: 420px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+        
 </script>
 
 </body>
 </html>
+
 
 
 
