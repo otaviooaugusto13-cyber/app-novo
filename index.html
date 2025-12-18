@@ -2,260 +2,238 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Afiliagram • Área de Membros</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Afiliagram Mobile</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         :root {
-            --bg-body: #0a0a0a;
-            --bg-sidebar: #121212;
-            --bg-card: #1c1c1c;
-            --accent-color: #00a8ff;
+            --bg-body: #000000;
+            --bg-card: #121212;
+            --accent: #00a8ff;
             --text-main: #ffffff;
-            --text-dim: #a0a0a0;
+            --text-dim: #888;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        * { 
+            box-sizing: border-box; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
         
         body { 
             margin: 0; 
             background: var(--bg-body); 
             color: var(--text-main); 
-            display: flex; 
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar { 
-            width: 260px; 
-            background: var(--bg-sidebar); 
-            padding: 20px; 
-            display: flex; 
+            display: flex;
             flex-direction: column;
-            border-right: 1px solid #222;
+            min-height: 100vh;
         }
 
-        .profile-section {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #222;
-            margin-bottom: 20px;
+        /* --- HEADER MOBILE --- */
+        header {
+            padding: 20px;
+            background: #0a0a0a;
+            border-bottom: 1px solid #1a1a1a;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        .avatar-circle {
-            width: 80px;
-            height: 80px;
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: #333;
-            margin: 0 auto 10px;
-            border: 2px solid #444;
+            background: #222;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid var(--accent);
         }
 
-        .sidebar h2 { font-size: 14px; margin: 10px 0; color: #fff; }
+        .user-name { font-size: 14px; font-weight: 600; }
 
-        .nav-links a {
-            display: flex;
-            align-items: center;
-            color: var(--text-dim);
-            text-decoration: none;
-            padding: 12px 10px;
-            margin: 4px 0;
-            border-radius: 8px;
-            transition: 0.3s;
-            font-size: 14px;
+        /* --- BARRA DE PROGRESSO COMPACTA --- */
+        .progress-box {
+            background: #111;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .progress-bar { 
+            height: 4px; 
+            background: #222; 
+            border-radius: 2px; 
+            margin-top: 5px;
+        }
+        .progress-fill { 
+            height: 100%; 
+            width: 0%; 
+            background: var(--accent); 
+            transition: 0.5s; 
         }
 
-        .nav-links a:hover, .nav-links a.active {
-            background: #1a1a1a;
-            color: var(--accent-color);
+        /* --- GRID DE MÓDULOS (2 COLUNAS) --- */
+        main { padding: 15px; flex: 1; }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: block;
         }
-
-        .progress-container { margin-top: auto; padding: 20px 0; }
-        .progress-text { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; display: block; }
-        .progress-bar { height: 6px; background: #333; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; background: var(--accent-color); transition: 0.5s; }
-
-        /* --- CONTENT AREA --- */
-        .main-content { 
-            flex: 1; 
-            padding: 40px; 
-            overflow-y: auto; 
-        }
-
-        .main-content h1 { font-size: 24px; margin-bottom: 30px; font-weight: 500; }
 
         .modules-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr 1fr; /* Duas colunas */
+            gap: 12px;
         }
 
-        /* --- CARD ESTILO STORIES (Igual à foto) --- */
+        /* --- CARDS ESTILO STORIES --- */
         .card {
-            aspect-ratio: 9/16;
+            aspect-ratio: 9/14;
             background: var(--bg-card);
-            border-radius: 12px;
+            border-radius: 10px;
             position: relative;
             overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            border: 1px solid #222;
+            border: 1px solid #1a1a1a;
         }
-
-        .card:hover { transform: translateY(-5px); }
 
         .card-img {
             position: absolute;
             inset: 0;
             background-size: cover;
             background-position: center;
-            filter: brightness(0.7);
+            filter: brightness(0.6);
         }
 
-        .card-overlay {
+        .card-content {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+            padding: 12px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 20px;
             z-index: 2;
         }
 
-        .mod-tag {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.8;
-            text-align: center;
-        }
-
+        .mod-label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); }
+        
         .card-title {
-            font-size: 22px;
+            font-size: 16px;
             font-weight: 800;
+            line-height: 1.1;
             text-transform: uppercase;
-            line-height: 1;
-            text-align: center;
-            color: #fff;
         }
+        .card-title span { color: var(--accent); }
 
-        .card-title span.highlight { color: var(--accent-color); }
-
-        /* --- MODAL --- */
+        /* --- MODAL MOBILE FULLSCREEN --- */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: #000;
             z-index: 100;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            flex-direction: column;
         }
 
-        .modal-body {
-            background: #111;
-            width: 100%;
-            max-width: 1000px;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
+        .modal-header {
+            padding: 15px;
+            display: flex;
+            justify-content: flex-end;
         }
 
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
-        .video-container iframe { position: absolute; top:0; left:0; width:100%; height:100%; border:none; }
+        .video-box { width: 100%; aspect-ratio: 16/9; background: #000; }
+        .video-box iframe { width: 100%; height: 100%; border: none; }
 
-        .modal-info { padding: 20px; }
-        .btn-close { position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 24px; z-index: 10; }
-
+        .modal-details { padding: 20px; }
+        
         .btn-action {
-            background: var(--accent-color);
-            color: white;
+            background: var(--accent);
+            color: #fff;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
             font-weight: bold;
-            margin-top: 10px;
+            font-size: 16px;
+            margin-top: 20px;
         }
 
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; }
-            .main-content { padding: 20px; }
+        .btn-close { color: #fff; font-size: 30px; text-decoration: none; }
+
+        /* --- BOTÃO CERTIFICADO FLUTUANTE --- */
+        #certBtn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: none;
+            z-index: 5;
         }
     </style>
 </head>
 <body>
 
-<aside class="sidebar">
-    <div class="profile-section">
-        <div class="avatar-circle">👤</div>
-        <h2>Mp2 Produtos Digitais Ltda</h2>
+<header>
+    <div class="user-info">
+        <div class="avatar">👤</div>
+        <div class="user-name">Mp2 Produtos Digitais</div>
     </div>
-
-    <nav class="nav-links">
-        <a href="#" class="active">🏠 Início</a>
-        <a href="#">👤 Minha Conta</a>
-        <a href="#">🎓 Central de Certificados</a>
-        <a href="#" id="adminLink">⚙️ Administrador</a>
-    </nav>
-
-    <div class="progress-container">
-        <span class="progress-text">Seu progresso: <b id="progressText">0%</b></span>
-        <div class="progress-bar">
-            <div id="progressFill" class="progress-fill"></div>
+    <div class="progress-box">
+        <div style="display: flex; justify-content: space-between; font-size: 11px;">
+            <span>Progresso</span>
+            <span id="progressText">0%</span>
         </div>
-        <button id="certBtn" class="btn-action" style="width:100%; margin-top:15px; opacity:0.5;" disabled>Gerar Certificado</button>
+        <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
     </div>
-</aside>
+</header>
 
-<main class="main-content">
-    <h1>Afiliagram</h1>
-    <div class="modules-grid" id="modulesGrid">
-        </div>
+<main>
+    <span class="section-title">Afiliagram</span>
+    <div class="modules-grid" id="modulesGrid"></div>
 </main>
 
+<button id="certBtn" class="btn-action" onclick="gerarCertificado()">Baixar Meu Certificado</button>
+
 <div class="modal" id="videoModal">
-    <div class="modal-body">
-        <span class="btn-close" onclick="closeModal()">&times;</span>
-        <div class="video-container">
-            <iframe id="mainVideo" src="" allowfullscreen></iframe>
-        </div>
-        <div class="modal-info">
-            <h2 id="modalTitle">Título do Módulo</h2>
-            <p id="modalDesc">Descrição da aula selecionada.</p>
-            <button class="btn-action" onclick="marcarComoConcluida()">Marcar como assistida</button>
-        </div>
+    <div class="modal-header">
+        <a href="#" class="btn-close" onclick="closeModal()">&times;</a>
+    </div>
+    <div class="video-box">
+        <iframe id="mainVideo" src="" allowfullscreen></iframe>
+    </div>
+    <div class="modal-details">
+        <h2 id="modalTitle" style="margin: 0 0 10px 0;">Título</h2>
+        <p style="color: #888; font-size: 14px;">Módulo concluído libera seu certificado automaticamente ao final.</p>
+        <button class="btn-action" onclick="marcarComoConcluida()">Marcar Aula como Concluída</button>
     </div>
 </div>
 
 <script>
     const modulos = [
-        { id: 1, tag: 'Módulo 1', t1: 'POR ONDE', t2: 'COMEÇAR', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-        { id: 2, tag: 'Módulo 2', t1: 'COMO SAIR', t2: 'NA FRENTE', img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-        { id: 3, tag: 'Módulo 3', t1: 'COMO FUNCIONA', t2: 'SUPORTE', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-        { id: 4, tag: 'Módulo 4', t1: 'MARKETING', t2: 'DIGITAL', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
+        { id: 1, tag: 'Módulo 1', t1: 'POR ONDE', t2: 'COMEÇAR', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+        { id: 2, tag: 'Módulo 2', t1: 'COMO SAIR', t2: 'NA FRENTE', img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+        { id: 3, tag: 'Módulo 3', t1: 'COMO FUNCIONA', t2: 'SUPORTE', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' },
+        { id: 4, tag: 'Módulo 4', t1: 'MARKETING', t2: 'DIGITAL', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300', video: 'https://www.youtube.com/embed/dQw4w9WgXcQ' }
     ];
 
     let concluidas = 0;
-    const total = modulos.length;
 
     function renderCards() {
         const grid = document.getElementById('modulesGrid');
         grid.innerHTML = modulos.map(m => `
             <div class="card" onclick="openModule('${m.video}', '${m.t1} ${m.t2}')">
                 <div class="card-img" style="background-image: url('${m.img}')"></div>
-                <div class="card-overlay">
-                    <div class="mod-tag">${m.tag}</div>
-                    <div class="card-title">${m.t1}<br><span class="highlight">${m.t2}</span></div>
+                <div class="card-content">
+                    <div class="mod-label">${m.tag}</div>
+                    <div class="card-title">${m.t1}<br><span>${m.t2}</span></div>
                 </div>
             </div>
         `).join('');
@@ -265,25 +243,24 @@
         document.getElementById('videoModal').style.display = 'flex';
         document.getElementById('mainVideo').src = url;
         document.getElementById('modalTitle').innerText = title;
+        document.body.style.overflow = 'hidden'; // Trava o scroll do fundo
     }
 
     function closeModal() {
         document.getElementById('videoModal').style.display = 'none';
         document.getElementById('mainVideo').src = '';
+        document.body.style.overflow = 'auto';
     }
 
     function marcarComoConcluida() {
-        if(concluidas < total) {
+        if(concluidas < modulos.length) {
             concluidas++;
-            const percent = Math.round((concluidas / total) * 100);
+            const percent = Math.round((concluidas / modulos.length) * 100);
             document.getElementById('progressFill').style.width = percent + '%';
             document.getElementById('progressText').innerText = percent + '%';
             
             if(percent === 100) {
-                const btn = document.getElementById('certBtn');
-                btn.disabled = false;
-                btn.style.opacity = "1";
-                btn.onclick = gerarCertificado;
+                document.getElementById('certBtn').style.display = 'block';
             }
         }
         closeModal();
@@ -292,13 +269,10 @@
     function gerarCertificado() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('l', 'mm', 'a4');
-        doc.setFillColor(20, 20, 20);
+        doc.setFillColor(10, 10, 10);
         doc.rect(0, 0, 297, 210, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(40);
-        doc.text("CERTIFICADO", 148, 70, { align: "center" });
-        doc.setFontSize(20);
-        doc.text("Concluído com sucesso por Aluno Afiliagram", 148, 100, { align: "center" });
+        doc.text("CERTIFICADO AFILIAGRAM", 148, 100, { align: "center" });
         doc.save("certificado.pdf");
     }
 
