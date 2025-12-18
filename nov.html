@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Praticamente • Alta Performance</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{margin:0;background:#0b0b0b;color:#fff;display:flex}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:#111;padding:25px;height:100vh}
+.sidebar h1{font-size:22px;margin-bottom:30px}
+.sidebar h1 span.blue{color:#1e90ff}
+.sidebar h1 span.gray{color:#aaa}
+.sidebar a{display:block;color:#aaa;text-decoration:none;margin:12px 0}
+.sidebar a:hover{color:#fff}
+.progress{margin-top:30px;font-size:13px}
+.progress-bar{height:8px;background:#333;border-radius:6px;margin-top:8px}
+.progress-fill{height:100%;width:0%;background:#1e90ff;border-radius:6px}
+#certBtn{margin-top:20px;padding:10px;width:100%;border:none;border-radius:6px;background:#333;color:#777;cursor:not-allowed}
+#certBtn.active{background:#1e90ff;color:#fff;cursor:pointer}
+
+/* CONTENT */
+.content{flex:1;padding:40px}
+.modules{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.module{background:#151515;border-radius:16px;padding:20px;cursor:pointer}
+.module img{width:100%;border-radius:12px;margin-bottom:10px}
+.module h3{margin:0}
+.module p{color:#1e90ff;font-size:13px}
+
+/* MODAL */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);align-items:center;justify-content:center}
+.modal-content{background:#111;width:90%;max-width:900px;border-radius:20px;padding:25px}
+.modal iframe{width:100%;height:320px;border-radius:12px;border:none}
+.lesson{display:flex;justify-content:space-between;align-items:center;background:#1a1a1a;padding:12px;border-radius:10px;margin-top:10px}
+.lesson button{margin-left:10px;padding:6px 10px;border:none;border-radius:6px;background:#1e90ff;color:#fff;cursor:pointer}
+.close{margin-top:15px;text-align:right;cursor:pointer;color:#aaa}
+
+@media(max-width:768px){.sidebar{display:none}.content{padding:20px}}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h1><span class="blue">PRATICA</span><span class="gray">MENTE</span></h1>
+  <a>Início</a>
+  <a>Minha Conta</a>
+  <a>Certificados</a>
+  <a>Suporte</a>
+
+  <div class="progress">
+    Progresso do curso
+    <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+    <span id="progressText">0%</span>
+  </div>
+
+  <button id="certBtn">Gerar Certificado</button>
+</div>
+
+<div class="content">
+  <h2>Alta Performance</h2>
+  <div class="modules" id="modules"></div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <iframe id="video"></iframe>
+    <div id="lessons"></div>
+    <div class="close" onclick="closeModal()">Fechar</div>
+  </div>
+</div>
+
+<script>
+const totalAulas = 5;
+let aulasAssistidas = 0;
+
+const modulos = [
+  {
+    id:1,
+    titulo:'Módulo 1',
+    subtitulo:'Por onde começar',
+    // imagem temática automática (Unsplash)
+    imagem:'https://source.unsplash.com/800x600/?focus,discipline',
+    video:'https://www.youtube.com/embed/dQw4w9WgXcQ'
+  },
+  {
+    id:2,
+    titulo:'Módulo 2',
+    subtitulo:'Constância',
+    imagem:'https://source.unsplash.com/800x600/?consistency,habits',
+    video:'https://www.youtube.com/embed/dQw4w9WgXcQ'
+  },
+  {
+    id:3,
+    titulo:'Módulo 3',
+    subtitulo:'Foco',
+    imagem:'https://source.unsplash.com/800x600/?focus,productivity',
+    video:'https://www.youtube.com/embed/dQw4w9WgXcQ'
+  },
+  {
+    id:4,
+    titulo:'Módulo 4',
+    subtitulo:'Disciplina',
+    imagem:'https://source.unsplash.com/800x600/?discipline,success',
+    video:'https://www.youtube.com/embed/dQw4w9WgXcQ'
+  },
+  {
+    id:5,
+    titulo:'Módulo 5',
+    subtitulo:'Alta Performance',
+    imagem:'https://source.unsplash.com/800x600/?performance,mindset',
+    video:'https://www.youtube.com/embed/dQw4w9WgXcQ'
+  }
+];
+
+const modulesDiv = document.getElementById('modules');
+modulos.forEach((m,i)=>{
+ const d=document.createElement('div');
+ d.className='module';
+ d.innerHTML=`<img src="${m.img}"><h3>${m.titulo}</h3><p>${m.subtitulo}</p>`;
+ d.onclick=()=>openModule(m);
+ modulesDiv.appendChild(d);
+});
+
+function openModule(m){
+ document.getElementById('modal').style.display='flex';
+ document.getElementById('video').src=m.yt;
+ const lessons=document.getElementById('lessons');
+ lessons.innerHTML='';
+ for(let i=1;i<=1;i++){
+  const l=document.createElement('div');
+  l.className='lesson';
+  l.innerHTML=`Aula ${i}
+  <div>
+   <button onclick="assistirAula()">Assistir</button>
+   <a href="videos/aula${i}.mp4" download><button>Vídeo</button></a>
+   <a href="arquivos/aula${i}.pdf" download><button>PDF</button></a>
+  </div>`;
+  lessons.appendChild(l);
+ }
+}
+
+function closeModal(){document.getElementById('modal').style.display='none';document.getElementById('video').src='';}
+
+function assistirAula(){
+ aulasAssistidas++;
+ let p=Math.min(100,Math.round((aulasAssistidas/totalAulas)*100));
+ document.getElementById('progressFill').style.width=p+'%';
+ document.getElementById('progressText').innerText=p+'%';
+ if(p===100){
+  const btn=document.getElementById('certBtn');
+  btn.classList.add('active');
+  btn.disabled=false;
+  btn.onclick=gerarCertificado;
+ }
+}
+
+function gerarCertificado(){
+ const {jsPDF}=window.jspdf;
+ const pdf=new jsPDF();
+ pdf.addImage('logo.png','PNG',70,20,70,70);
+ pdf.setFontSize(18);
+ pdf.text('CERTIFICADO DE CONCLUSÃO',105,110,{align:'center'});
+ pdf.setFontSize(12);
+ pdf.text('Certificamos que o aluno concluiu o curso',105,130,{align:'center'});
+ pdf.text('PRATICAMENTE • Alta Performance',105,145,{align:'center'});
+ pdf.save('certificado-praticamente.pdf');
+}
+</script>
+</body>
+</html>
+
+
