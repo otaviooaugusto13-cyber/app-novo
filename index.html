@@ -331,11 +331,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderCards();
 });
+   /* --- ESTILOS PARA DESKTOP (PC) --- */
+@media screen and (min-width: 1024px) {
+    body {
+        flex-direction: row;
+        background: #111; /* exemplo, ajustar conforme a foto */
+    }
+
+    header {
+        width: 250px; /* largura fixa para sidebar do PC */
+        height: 100vh;
+        border-bottom: none;
+        border-right: 1px solid #1a1a1a;
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 30px 20px;
+    }
+
+    .layout {
+        margin-left: 250px; /* espaço para a sidebar */
+        display: flex;
+        flex-direction: column;
+        padding: 30px;
+    }
+
+    .modules-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 colunas no PC */
+        gap: 20px;
+    }
+
+    .card {
+        aspect-ratio: 4/5; /* ajustar conforme foto */
+        border-radius: 12px;
+        border: 1px solid #222;
+    }
+
+    .card-title {
+        font-size: 18px;
+    }
+
+    .mod-label {
+        font-size: 11px;
+    }
+
+    #certBtn {
+        bottom: 40px;
+        left: auto;
+        right: 40px;
+        width: auto;
+        padding: 12px 25px;
+    }
+}
+
 </script>
 
 
 </body>
 </html>
+
 
 
 
