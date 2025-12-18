@@ -168,8 +168,18 @@ function gerarCertificado(){
  pdf.text('PRATICAMENTE • Alta Performance',105,145,{align:'center'});
  pdf.save('certificado-praticamente.pdf');
 }
+  <link rel="manifest" href="manifest.json">
+
+
+<script>
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('sw.js')
+.then(() => console.log('App instalado com sucesso'))
+}
+</script>
 </script>
 </body>
 </html>
+
 
 
